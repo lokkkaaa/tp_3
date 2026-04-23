@@ -1,0 +1,32 @@
+import PySimpleGUI as sg
+import pandas as pd
+import matplotlib.pyplot as plt
+def vika_module():
+    try:
+        df = load_data()
+        show_table(df)
+    except Exception as e:
+        sg.popup(f"Ошибка: {e}")
+def load_data():
+    df = pd.read_excel("infections.xlsx")
+    return df
+def show_table(df):
+    layout = [
+        [sg.Table(
+            values=df.values.tolist(),
+            headings=list(df.columns),
+            auto_size_columns=True,
+            justification='center',
+            num_rows=10
+        )],
+        [sg.Button("Закрыть")]
+    ]
+
+    window = sg.Window("Таблица заболеваний", layout)
+
+    while True:
+        event, _ = window.read()
+        if event in (sg.WIN_CLOSED, "Закрыть"):
+            break
+
+    window.close()
