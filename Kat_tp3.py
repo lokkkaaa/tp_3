@@ -111,3 +111,67 @@ def show_plots(data):
     def weekend_km(data):
         total = sum(row['distance_km'] for row in data if row['weekend'] == 1)
         sg.popup(f'Всего за выходные: {total:.2f} км', title='Пробежные км')
+# ------------------------------------------------------------
+# Прогноз скользящей средней
+# ------------------------------------------------------------
+def forecast_window(data):
+    distances = [row['distance_km'] for row in data]
+    layout = [
+        [sg.Text('Период N:'), sg.InputText('5', key='-N-', size=(10,1))],
+        [sg.Text('Дней прогноза K:'), sg.InputText('7', key='-K-', size=(10,1))],
+        [sg.Button('Построить'), sg.Button('Сохранить'), sg.Button('Закрыть')],
+        [sg.Canvas(key='-CANVAS-', size=(800, 500))]
+    ]
+    win = sg.Window('Прогноз', layout, finalize=True, size=(900, 700))
+    fig = None
+    canvas = None
+    toolbar = None
+
+    def draw_forecast(n, k):
+        nonlocal fig, canvas, toolbar
+        y = distances[:]
+        forecast = []
+        cur = y[:]
+        for _ in range(k):
+            if len(cur) < n:
+                break
+            ma = sum(cur[-n:]) / n
+            forecast.append(ma)
+            cur.append(ma)
+        hist_days = list(range(1, len(y)+1))
+        pred_days = list(range(len(y)+1, len(y)+k+1))
+        if fig:
+            plt.close(fig)
+        fig, ax = plt.subplots(figsize=(8,5))
+        ax.plot(hist_days, y, marker='o', label='История', color='blue')
+        ax.plot(pred_days, forecast, marker='x', linestyle='--', label='Прогноз', color='red')
+        ax.set_xlabel('День'); ax.set_ylabel('Дистанция (км)')
+        ax.set_title(f'Прогноз на {k} дней, N={n}')
+        ax.legend(); ax.grid(True)
+        if canvas:
+            canvas.get_tk_widget().destroy()
+        if toolbar:
+            toolbar.destroy()
+        canvas = FigureCanvasTkAgg(fig, win['-CANVAS-'].TKCanvas)
+        canvas.draw()
+        toolbar = NavigationToolbar2Tk(canvas, win['-CANVAS-'].TKCanvas)
+        toolbar.update()
+        canvas.get_tk_widget().pack(side='top', fill='both', expand=1)
+
+    while True:
+        event, values = win.read()
+        if event in (sg.WIN_CLOSED, 'Закрыть'):
+            break
+        if event == 'Построить':
+            try:
+                n = int(values['-N-']); k = int(values['-K-'])
+                if n>0 and k>0:
+                    draw_forecast(n, k)
+                else:
+                    sg.popup('N и K > 0')
+            except ValueError:
+                sg.popup('Введите числа')
+        if event == 'Сохранить' and fig:
+            fig.savefig('forecast.png', dpi=150)
+            sg.popup('Сохранено как forecast.png')
+    win.close()
