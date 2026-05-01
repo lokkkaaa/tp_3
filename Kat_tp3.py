@@ -104,3 +104,10 @@ def show_plots(data):
             fig.savefig('plots.png', dpi=150)
             sg.popup('Сохранено как plots.png')
     win.close()
+
+    # ------------------------------------------------------------
+    # Сумма км за выходные
+    # ------------------------------------------------------------
+    def weekend_km(data):
+        total = sum(row['distance_km'] for row in data if row['weekend'] == 1)
+        sg.popup(f'Всего за выходные: {total:.2f} км', title='Пробежные км')
