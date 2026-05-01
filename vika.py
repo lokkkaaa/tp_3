@@ -34,7 +34,7 @@ def vika_module():
         [sg.Button("Прогноз", size=(60, 2))],
         [sg.Button("Назад", size=(60, 2))],
     ]
-    window = sg.Window("Модуль Вики", layout, size=(400, 400),font=("Helvetica", 16))
+    window = sg.Window("Данные о заболеваниях", layout, size=(400, 400),font=("Helvetica", 16))
 
     while True:
         event, _ = window.read()
@@ -148,7 +148,7 @@ def extrapolate(series, window, n_years):
     return forecast
 
 
-# ===== Прогноз (UI) =====
+# ===== Прогноз =====
 
 def forecast_ui(df):
     last_year = int(df['Год'].iloc[-1])
