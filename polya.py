@@ -2,10 +2,10 @@ import PySimpleGUI as sg
 import pandas as pd
 import matplotlib.pyplot as plt
 
-sg.theme('DarkTeal9')
 
+# ======================
+# ЗАГРУЗКА ДАННЫХ
 
-#  ЗАГРУЗКА
 def load_data(path):
     return pd.read_excel(path)
 
@@ -17,6 +17,7 @@ def validate_df(df):
         raise ValueError("Нужны колонки: 'Год' и 'Население'.")
 
 
+
 # ТАБЛИЦА
 def show_table(df):
     layout = [
@@ -26,7 +27,8 @@ def show_table(df):
             auto_size_columns=True,
             justification='center',
             num_rows=min(15, len(df)),
-            expand_x=True
+            expand_x=True,
+            expand_y=True
         )],
         [sg.Button("Закрыть")]
     ]
@@ -41,7 +43,9 @@ def show_table(df):
     window.close()
 
 
+
 # ГРАФИК
+
 def plot_graph(df):
     plt.figure()
     plt.plot(df['Год'], df['Население'], marker='o')
@@ -52,7 +56,9 @@ def plot_graph(df):
     plt.show()
 
 
+
 # АНАЛИЗ
+
 def analyze(df):
     pop = df['Население']
 
@@ -68,7 +74,9 @@ def analyze(df):
     )
 
 
+
 # ПРОГНОЗ
+
 def extrapolate(series, window, n):
     history = list(series)
     forecast = []
@@ -117,91 +125,101 @@ def forecast(df, window, years):
     plt.show()
 
 
-sg.theme('LightBlue2')  # можно менять
 
-layout = [
-    [sg.Text("Анализ численности населения РФ",
-             font=("Helvetica", 24),
-             justification='center',
-             expand_x=True)],
+# добавлен модуль для полноценного запуска из главного меню
 
-    [sg.Text("Выберите Excel файл:", expand_x=True, justification='center')],
-    [sg.Input(key='-FILE-', expand_x=True),
-     sg.FileBrowse(size=(15, 1))],
+def run_polya():
+    sg.theme('LightBlue2')
 
-    [sg.Button("Загрузить данные",
-               size=(30, 2),
-               expand_x=True)],
+    layout = [
+        [sg.Text(
+            "Анализ численности населения РФ",
+            font=("Helvetica", 24),
+            justification='center',
+            expand_x=True
+        )],
 
-    [sg.TabGroup([[
-        sg.Tab("Таблица", [
-            [sg.Button("Показать таблицу",
-                       expand_x=True, expand_y=True)]
-        ]),
-        sg.Tab("График", [
-            [sg.Button("Построить график",
-                       expand_x=True, expand_y=True)]
-        ]),
-        sg.Tab("Анализ", [
-            [sg.Button("Показать анализ",
-                       expand_x=True, expand_y=True)]
-        ]),
-        sg.Tab("Прогноз", [
-            [sg.Text("Окно:"), sg.Input("3", key='-W-', size=(5, 1))],
-            [sg.Text("Лет:"), sg.Input("5", key='-N-', size=(5, 1))],
-            [sg.Button("Построить прогноз",
-                       expand_x=True, expand_y=True)]
-        ])
-    ]], expand_x=True, expand_y=True)],
+        [sg.Text("Выберите Excel файл:", expand_x=True, justification='center')],
 
-    [sg.Button("Выход", expand_x=True)]
-]
+        [sg.Input(key='-FILE-', expand_x=True),
+         sg.FileBrowse(size=(15, 1))],
 
-window = sg.Window(
-    "Население России",
-    layout,
-    resizable=True,
-    finalize=True,
-    element_justification='center'
-)
+        [sg.Button("Загрузить данные", size=(30, 2), expand_x=True)],
 
-# 👉 разворачиваем на весь экран
-window.maximize()
+        [sg.TabGroup([[
 
-df = None
+            sg.Tab("Таблица", [
+                [sg.Button("Показать таблицу", expand_x=True, expand_y=True)]
+            ]),
 
-while True:
-    event, values = window.read()
+            sg.Tab("График", [
+                [sg.Button("Построить график", expand_x=True, expand_y=True)]
+            ]),
 
-    if event in (sg.WIN_CLOSED, "Выход"):
-        break
+            sg.Tab("Анализ", [
+                [sg.Button("Показать анализ", expand_x=True, expand_y=True)]
+            ]),
 
-    if event == "Загрузить данные":
-        try:
-            df = load_data(values['-FILE-'])
-            validate_df(df)
-            sg.popup("Файл загружен!")
-        except Exception as e:
-            sg.popup_error(f"Ошибка:\n{e}")
+            sg.Tab("Прогноз", [
+                [sg.Text("Окно:"), sg.Input("3", key='-W-', size=(5, 1))],
+                [sg.Text("Лет:"), sg.Input("5", key='-N-', size=(5, 1))],
+                [sg.Button("Построить прогноз", expand_x=True, expand_y=True)]
+            ])
 
-    if df is None:
-        continue
+        ]], expand_x=True, expand_y=True)],
 
-    if event == "Показать таблицу":
-        show_table(df)
+        [sg.Button("Выход", expand_x=True)]
+    ]
 
-    elif event == "Построить график":
-        plot_graph(df)
+    window = sg.Window(
+        "Население России",
+        layout,
+        resizable=True,
+        finalize=True,
+        element_justification='center'
+    )
 
-    elif event == "Показать анализ":
-        analyze(df)
+    window.maximize()
 
-    elif event == "Построить прогноз":
-        try:
-            w = int(values['-W-'])
-            n = int(values['-N-'])
-            forecast(df, w, n)
-        except:
-            sg.popup_error("Ошибка ввода")
+    df = None
 
-window.close()
+    while True:
+        event, values = window.read()
+
+        if event in (sg.WIN_CLOSED, "Выход"):
+            break
+
+        if event == "Загрузить данные":
+            try:
+                df = load_data(values['-FILE-'])
+                validate_df(df)
+                sg.popup("Файл загружен!")
+            except Exception as e:
+                sg.popup_error(f"Ошибка:\n{e}")
+
+        if df is None:
+            continue
+
+        if event == "Показать таблицу":
+            show_table(df)
+
+        elif event == "Построить график":
+            plot_graph(df)
+
+        elif event == "Показать анализ":
+            analyze(df)
+
+        elif event == "Построить прогноз":
+            try:
+                w = int(values['-W-'])
+                n = int(values['-N-'])
+                forecast(df, w, n)
+            except:
+                sg.popup_error("Ошибка ввода")
+
+    window.close()
+
+
+# чтобы можно было запускать отдельно
+if __name__ == "__main__":
+    run_polya()
