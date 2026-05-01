@@ -25,4 +25,3 @@ def load_data(filename='running_data.csv'):
     except Exception as e:
         sg.popup_error(f'Ошибка загрузки {filename}:\n{e}')
         return None
-
