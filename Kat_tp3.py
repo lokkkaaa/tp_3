@@ -105,12 +105,13 @@ def show_plots(data):
             sg.popup('Сохранено как plots.png')
     win.close()
 
-    # ------------------------------------------------------------
-    # Сумма км за выходные
-    # ------------------------------------------------------------
-    def weekend_km(data):
-        total = sum(row['distance_km'] for row in data if row['weekend'] == 1)
-        sg.popup(f'Всего за выходные: {total:.2f} км', title='Пробежные км')
+# ------------------------------------------------------------
+# Сумма км за выходные
+# ------------------------------------------------------------
+def weekend_km(data):
+    total = sum(row['distance_km'] for row in data if row['weekend'] == 1)
+    sg.popup(f'Всего за выходные: {total:.2f} км', title='Пробежные км')
+
 # ------------------------------------------------------------
 # Прогноз скользящей средней
 # ------------------------------------------------------------
@@ -175,3 +176,39 @@ def forecast_window(data):
             fig.savefig('forecast.png', dpi=150)
             sg.popup('Сохранено как forecast.png')
     win.close()
+
+# ------------------------------------------------------------
+# Главная функция, вызываемая из main.py
+# ------------------------------------------------------------
+def run():
+    data = load_data('running_data.csv')
+    if data is None:
+        return
+    layout = [
+        [sg.Text('Информация о пробежках', font='Helvetica 20', justification='center', expand_x=True)],
+        [sg.Button('Открыть таблицу', key='-OPEN_TABLE-', font='Helvetica 16', size=(25, 1))],
+        [sg.Button('Показать графики', key='-SHOW_PLOTS-', font='Helvetica 16', size=(25, 1))],
+        [sg.Button('Пробежные км', key='-TOTAL_KM-', font='Helvetica 16', size=(25, 1))],
+        [sg.Button('Прогноз на следующее N дней', key='-FORECAST-', font='Helvetica 16', size=(25, 1))],
+        [sg.Button('◀ Назад', key='-BACK-', font='Helvetica 14', size=(25, 1))]
+    ]
+    window = sg.Window('Меню: пробежки', layout, size=(500, 400), finalize=True)
+    while True:
+        event, _ = window.read()
+        if event in (sg.WIN_CLOSED, '-BACK-'):
+            break
+        if event == '-OPEN_TABLE-':
+            show_table(data)
+        elif event == '-SHOW_PLOTS-':
+            show_plots(data)
+        elif event == '-TOTAL_KM-':
+            weekend_km(data)
+        elif event == '-FORECAST-':
+            forecast_window(data)
+    window.close()
+
+# ------------------------------------------------------------
+# Если запускают этот файл напрямую
+# ------------------------------------------------------------
+if __name__ == '__main__':
+    run()
