@@ -25,3 +25,24 @@ def load_data(filename='running_data.csv'):
     except Exception as e:
         sg.popup_error(f'Ошибка загрузки {filename}:\n{e}')
         return None
+
+# ------------------------------------------------------------
+# Таблица
+# ------------------------------------------------------------
+def show_table(data):
+    if not data:
+        sg.popup('Нет данных')
+        return
+    headers = list(data[0].keys())
+    rows = [[row[h] for h in headers] for row in data]
+    layout = [
+        [sg.Table(values=rows, headings=headers, auto_size_columns=True,
+                  justification='center', num_rows=min(20, len(rows)))],
+        [sg.Button('Закрыть')]
+    ]
+    win = sg.Window('Таблица пробежек', layout, finalize=True, size=(1000, 600))
+    while True:
+        event, _ = win.read()
+        if event in (sg.WIN_CLOSED, 'Закрыть'):
+            break
+    win.close()
