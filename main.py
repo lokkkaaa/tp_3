@@ -1,8 +1,8 @@
 import PySimpleGUI as sg
 layout = [
-    [sg.Button('Данные о пробежках (Кэт)', key='-KAT-', font='Helvetica 16')],
-    [sg.Button('Данные о численности населения (Поля)', key='-POLYA-', font='Helvetica 16')],
-    [sg.Button('Данные о заболеваниях (Вика)', key='-VIKA-', font='Helvetica 16')]
+    [sg.Button('Данные о пробежках', key='-KAT-', font='Helvetica 16', size=(60, 2))],
+    [sg.Button('Данные о численности населения', key='-POLYA-', font='Helvetica 16', size=(60, 2))],
+    [sg.Button('Данные о заболеваниях', key='-VIKA-', font='Helvetica 16',size=(60, 2))]
 ]
 window = sg.Window('Главное меню', layout, size=(500,300))
 while True:
