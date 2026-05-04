@@ -14,7 +14,7 @@ while True:
         break
     if event == '-VIKA-':
         vika_module()
-    if event == "-POLYA":
+    if event == "-POLYA-":
         run_polya()
     if event == '-KAT-':
         window.hide()
