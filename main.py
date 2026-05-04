@@ -1,4 +1,6 @@
 import PySimpleGUI as sg
+from vika import vika_module
+from polya import run_polya
 layout = [
     [sg.Button('Данные о пробежках', key='-KAT-', font='Helvetica 16', size=(60, 2))],
     [sg.Button('Данные о численности населения', key='-POLYA-', font='Helvetica 16', size=(60, 2))],
@@ -9,4 +11,11 @@ while True:
     event, values = window.read()
     if event in (sg.WIN_CLOSED, 'Exit'):
         break
+    if event == '-VIKA-':
+        vika_module()
+    if event == "-POLYA":
+        run_polya()
+
+
+
 window.close()
