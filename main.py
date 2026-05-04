@@ -1,5 +1,4 @@
 import PySimpleGUI as sg
-from vika import vika_module
 layout = [
     [sg.Button('Данные о пробежках (Кэт)', key='-KAT-', font='Helvetica 16')],
     [sg.Button('Данные о численности населения (Поля)', key='-POLYA-', font='Helvetica 16')],
@@ -10,7 +9,4 @@ while True:
     event, values = window.read()
     if event in (sg.WIN_CLOSED, 'Exit'):
         break
-    if event == '-VIKA-':
-        vika_module()
-
 window.close()
